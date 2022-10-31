@@ -10,13 +10,13 @@ const options: SchemaOptions = {
 export class Cat extends Document {
   @Prop({
     required: true,
-    unique: true
+    unique: true,
   })
   @IsEmail()
   @IsNotEmpty()
   email: string;
 
-  @Prop()₩
+  @Prop()
   @IsString()
   @IsNotEmpty()
   name: string;
