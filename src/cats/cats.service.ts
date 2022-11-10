@@ -1,26 +1,30 @@
-import { Injectable } from '@nestjs/common';
-import { CreateCatDto } from './dto/create-cat.dto';
-import { UpdateCatDto } from './dto/update-cat.dto';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import * as bcrypt from 'bcrypt';
+import { Cat } from './cats.schema';
+import { CatRequestDto } from './dto/cats.request.dto';
 
 @Injectable()
 export class CatsService {
-  create(createCatDto: CreateCatDto) {
-    return 'This action adds a new cat';
-  }
+  constructor(@InjectModel(Cat.name) private readonly catModel: Model<Cat>) {}
 
-  findAll() {
-    return `This action returns all cats`;
-  }
+  async signUp(body: CatRequestDto) {
+    const { email, name, password } = body;
+    const isCatExist = await this.catModel.exists({ email });
 
-  findOne(id: number) {
-    return `This action returns a #${id} cat`;
-  }
+    if (isCatExist) {
+      throw new UnauthorizedException('해당하는 고양이는 이미 존재합니다.');
+    }
 
-  update(id: number, updateCatDto: UpdateCatDto) {
-    return `This action updates a #${id} cat`;
-  }
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  remove(id: number) {
-    return `This action removes a #${id} cat`;
+    const cat = await this.catModel.create({
+      email,
+      name,
+      password: hashedPassword,
+    });
+
+    return cat.readOnlyData;
   }
 }
