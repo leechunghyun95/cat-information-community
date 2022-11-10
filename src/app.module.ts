@@ -5,8 +5,7 @@ import mongoose from 'mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CatsModule } from './cats/cats.module';
-import { LoggerMiddleware } from './middlewares/logger.middleware';
-
+import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 @Module({
   imports: [
     ConfigModule.forRoot(),
